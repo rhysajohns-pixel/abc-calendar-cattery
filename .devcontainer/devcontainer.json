@@ -1,0 +1,20 @@
+export default {
+  async fetch(request) {
+    const url = "https://www.caricapets.co.uk/dashboard/icalfeed?id=281c9443-f4a9-4494-a20c-6a87ea9e026c";
+
+    let res = await fetch(url);
+    let text = await res.text();
+
+    // 🔧 Fix timezone stupidity:
+    // Remove UTC marker (Z)
+    text = text.replace(/Z/g, '');
+
+    // Force London timezone
+    text = text.replace(/DTSTART:/g, 'DTSTART;TZID=Europe/London:');
+    text = text.replace(/DTEND:/g, 'DTEND;TZID=Europe/London:');
+
+    return new Response(text, {
+      headers: { "content-type": "text/calendar" },
+    });
+  },
+};
